@@ -1,0 +1,6 @@
+- name: Upload to Tour de Cloud
+  uses: studentscangrow/upload-app@v27
+  env:
+    API_KEY: ${{ secrets.API_KEY }}
+  with:
+    tdc_token: ${{ secrets.TDC_TOKEN }}
