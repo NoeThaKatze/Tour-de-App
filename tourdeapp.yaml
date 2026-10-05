@@ -10,7 +10,7 @@ containers:
     image: registry.tourde.cloud/blbci/server
     port: 8080
     env:
-      FASTAPI_DB_HOST: 127.0.0.1
+      FASTAPI_DB_HOST: mysql
       FASTAPI_DB_NAME: product
       FASTAPI_DB_PASSWORD: "strongPassword?"
       FASTAPI_DB_PORT: "3306"
@@ -22,6 +22,8 @@ containers:
     env:
       MYSQL_DATABASE: product
       MYSQL_ROOT_PASSWORD: password
+      MYSQL_USER: tda_user
+      MYSQL_PASSWORD: "strongPassword?"
     port: 3306
   - name: caddy
     image: registry.tourde.cloud/blbci/caddy
