@@ -44,7 +44,7 @@ function handleCancel() {
 
 <template>
   <div>
-    <h1>School Buffet</h1>
+    <h1>Think different Academy</h1>
 
     <ProductForm
       :initial="editingProduct"
