@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .database import Base, engine
-from .routes import router
+from .routes import health_router, router
 
 
 def create_app() -> FastAPI:
@@ -15,6 +15,7 @@ def create_app() -> FastAPI:
 
     # Allow a frontend dev server on another port (e.g. localhost:3001) to call the API.
     app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+    app.include_router(health_router)
     app.include_router(router)
 
     for attempt in range(30):
