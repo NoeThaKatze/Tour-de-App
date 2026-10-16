@@ -5,19 +5,33 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from .database import get_db
+from .models import Member as MemberModel
 from .models import Product as ProductModel
+from .models import Team as TeamModel
 from .schemas import Product, ProductCreate
 
 router = APIRouter(prefix="/api/product", tags=["products"])
 
 DbSession = Annotated[Session, Depends(get_db)]
 
-health_router = APIRouter(prefix="/api/v1", tags=["health"])
+v1_router = APIRouter(prefix="/api/v1", tags=["health"])
 
 
-@health_router.get("/health")
+@v1_router.get("/health")
 def health():
     return {"status": "ok"}
+
+
+@v1_router.get("/team")
+def get_team(db: DbSession):
+    team = db.scalars(select(TeamModel)).first()
+    if team is None:
+        raise HTTPException(status_code=404, detail="Team does not exist")
+
+    members = db.scalars(
+        select(MemberModel).where(MemberModel.team_id == team.id).order_by(MemberModel.id)
+    ).all()
+    return {"name": team.name, "members": [m.name for m in members]}
 
 
 @router.get("", response_model=list[Product])
