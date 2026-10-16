@@ -44,3 +44,16 @@ export async function getHealth(): Promise<{ status: string }> {
   }
   return res.json();
 }
+
+export interface Team {
+  name: string;
+  members: string[];
+}
+
+export async function getTeam(): Promise<Team> {
+  const res = await fetch(`${API_URL}/v1/team`);
+  if (!res.ok) {
+    throw new Error(`Team request failed: ${res.status}`);
+  }
+  return res.json();
+}
