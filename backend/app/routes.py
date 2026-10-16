@@ -12,6 +12,13 @@ router = APIRouter(prefix="/api/product", tags=["products"])
 
 DbSession = Annotated[Session, Depends(get_db)]
 
+health_router = APIRouter(prefix="/api/v1", tags=["health"])
+
+
+@health_router.get("/health")
+def health():
+    return {"status": "ok"}
+
 
 @router.get("", response_model=list[Product])
 def list_products(db: DbSession):
