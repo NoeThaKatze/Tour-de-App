@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { getProducts, createProduct, updateProduct, deleteProduct, getHealth } from './api';
+import { getProducts, createProduct, updateProduct, deleteProduct, getHealth, getTeam } from './api';
+import type { Team } from './api';
 import type { Product, ProductPayload } from './types';
 import ProductForm from './components/ProductForm.vue';
 import ProductTable from './components/ProductTable.vue';
@@ -8,6 +9,15 @@ import ProductTable from './components/ProductTable.vue';
 const products = ref<Product[]>([]);
 const editingProduct = ref<Product | null>(null);
 const healthStatus = ref('...');
+const team = ref<Team | null>(null);
+
+async function loadTeam() {
+  try {
+    team.value = await getTeam();
+  } catch (e) {
+    console.error('Failed to load team:', e);
+  }
+}
 
 async function loadHealth() {
   try {
@@ -29,6 +39,7 @@ async function loadProducts() {
 
 onMounted(() => {
   loadHealth();
+  loadTeam();
   loadProducts();
 });
 
@@ -70,5 +81,19 @@ function handleCancel() {
       @edit="p => editingProduct = p"
       @delete="handleDelete"
     />
+
+    <footer v-if="team" class="authors">
+      Created by {{ team.name }}: {{ team.members.join(', ') }}
+    </footer>
   </div>
 </template>
+
+<style scoped>
+.authors {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid #222;
+  color: #888;
+  font-size: 14px;
+}
+</style>
