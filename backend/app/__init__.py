@@ -11,7 +11,7 @@ from .database import SessionLocal
 from .models import Member, Team
 from .routes import router, v1_router
 
-TEAM_NAME = "Blbí a Blbější"
+TEAM_NAME = "Blbej a Blbější"
 TEAM_MEMBERS = ["Adamooss0", "NoeThaKatze"]
 
 BASE_DIR = Path(__file__).resolve().parent.parent
