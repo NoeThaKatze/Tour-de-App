@@ -1,16 +1,27 @@
 import time
+from pathlib import Path
 
+from alembic import command
+from alembic.config import Config
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
 from sqlalchemy import delete, select
 
-from .database import Base, SessionLocal, engine
+from .database import SessionLocal
 from .models import Member, Team
 from .routes import router, v1_router
 
 TEAM_NAME = "Blbí a Blbější"
 TEAM_MEMBERS = ["Adamooss0", "NoeThaKatze"]
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+def run_migrations() -> None:
+    """Přivede databázi na nejnovější verzi schématu (alembic upgrade head)."""
+    cfg = Config(str(BASE_DIR / "alembic.ini"))
+    cfg.set_main_option("script_location", str(BASE_DIR / "alembic"))
+    command.upgrade(cfg, "head")
 
 
 def seed_team() -> None:
@@ -35,20 +46,19 @@ def create_app() -> FastAPI:
         description="API for students to start coding. Simple list of product at school buffet.",
     )
 
-    # Allow a frontend dev server on another port (e.g. localhost:3001) to call the API.
     app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
-    app.include_router(v1_router)
     app.include_router(router)
+    app.include_router(v1_router)
 
     for attempt in range(30):
         try:
-            Base.metadata.create_all(bind=engine)
+            run_migrations()
             seed_team()
             break
         except Exception as e:
             print(f"DB ještě není připravená ({attempt + 1}/30): {e}", flush=True)
             time.sleep(3)
     else:
-        raise RuntimeError("Nepodařilo se vytvořit tabulky")
+        raise RuntimeError("Nepodařilo se připravit databázi")
 
     return app
